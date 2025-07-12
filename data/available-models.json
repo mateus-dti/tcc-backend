@@ -1,0 +1,28 @@
+{
+  "models": [
+    {
+      "name": "Venice: Uncensored",
+      "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free"
+    },
+    {
+      "id": "google/gemma-3n-e2b-it:free",
+      "name": "Gemma 3N 2B"
+    },
+    {
+      "id": "tngtech/deepseek-r1t2-chimera:free",
+      "name": "DeepSeek R1T2 Chimera"
+    },
+    {
+      "id": "openrouter/cypher-alpha:free",
+      "name": "Cypher Alpha"
+    },
+    {
+      "id": "mistralai/mistral-small-3.2-24b-instruct:free",
+      "name": "Mistral Small 3.2 24B Instruct"
+    },
+    {
+      "id": "moonshotai/kimi-dev-72b:free",
+      "name": "Kimi Dev 72B"
+    }
+  ]
+}
