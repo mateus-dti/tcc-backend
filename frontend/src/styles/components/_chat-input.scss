@@ -73,12 +73,27 @@
   
   &__footer {
     margin-top: var(--spacing-2);
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--spacing-2);
+    }
   }
   
   &__hint {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
+    white-space: nowrap;
+    
+    @media (max-width: 768px) {
+      text-align: center;
+      white-space: normal;
+    }
   }
 }
 

@@ -9,11 +9,13 @@ O sistema permite que usuários interajam com diferentes modelos de IA (GPT, Cla
 ### Principais Funcionalidades
 
 - 💬 **Chat em tempo real** com múltiplos modelos de IA
-- 📝 **Gerenciamento de sessões** para organizar conversas
+- � **Seletor de modelo dinâmico** para escolher o modelo de IA durante a conversa
+- �📝 **Gerenciamento de sessões** para organizar conversas
 - 👤 **Sistema de usuários** para personalização
 - 🤖 **Múltiplos modelos** disponíveis via OpenRouter
 - 💾 **Persistência de dados** com Redis
 - 🔒 **Segurança** com middlewares de proteção
+- 🎨 **Interface moderna** com tema ultra dark e design responsivo
 
 ## 🏗️ Arquitetura do Sistema
 
@@ -57,8 +59,41 @@ O sistema permite que usuários interajam com diferentes modelos de IA (GPT, Cla
 - **TypeScript** - Tipagem estática
 - **Vite** - Build tool moderna e rápida
 - **SASS** - Pré-processador CSS
+- **Context API** - Gerenciamento de estado global
 - **Axios** - Cliente HTTP para comunicação com a API
 - **React Router** - Roteamento SPA
+
+## ✨ Funcionalidades Especiais
+
+### 🔄 Seletor de Modelo Dinâmico
+
+O sistema inclui um seletor de modelo integrado à interface de chat que permite:
+
+- **Troca de modelo em tempo real** durante a conversa
+- **Interface compacta** integrada ao campo de input
+- **Modelos disponíveis**:
+  - Venice: Uncensored
+  - Gemma 3N 2B
+  - DeepSeek R1T2 Chimera
+  - Cypher Alpha
+  - Mistral Small 3.2 24B Instruct
+  - Kimi Dev 72B
+- **Design harmonioso** com cores que seguem o tema do projeto
+- **Responsividade** para diferentes tamanhos de tela
+
+O seletor é posicionado abaixo da caixa de texto principal e permite que o usuário escolha qual modelo de IA utilizará para sua próxima consulta, oferecendo flexibilidade na experiência de uso.
+
+### 🔧 Gerenciamento de Estado
+
+O projeto utiliza **React Context API** para gerenciamento de estado global, incluindo:
+
+- **Estado das mensagens** do chat
+- **Modelo selecionado** atualmente
+- **Lista de modelos disponíveis**
+- **Estado de carregamento** da aplicação
+- **Input atual** do usuário
+
+O contexto é implementado com `useReducer` para garantir atualizações de estado previsíveis e facilitar o debug.
 
 ## 🚀 Como Executar o Projeto
 
@@ -167,13 +202,26 @@ backend/
 frontend/
 ├── src/
 │   ├── components/         # Componentes reutilizáveis
+│   │   ├── Chat.tsx
+│   │   ├── ChatInput.tsx
+│   │   ├── ChatLayout.tsx
+│   │   ├── ChatMessage.tsx
+│   │   ├── ChatMessages.tsx
+│   │   ├── ChatSidebar.tsx
+│   │   ├── ChatWindow.tsx
+│   │   ├── ModelSelector.tsx  # Seletor de modelo de IA
+│   │   └── index.ts
 │   ├── pages/              # Páginas da aplicação
 │   ├── hooks/              # Custom hooks
+│   │   └── useChat.ts      # Hook para gerenciamento do chat
 │   ├── services/           # Serviços de API
 │   ├── types/              # Definições de tipos TypeScript
 │   ├── styles/             # Estilos SASS
 │   │   ├── components/     # Estilos de componentes
+│   │   │   ├── _model-selector.scss  # Estilos do seletor
+│   │   │   └── ...
 │   │   └── pages/          # Estilos de páginas
+│   ├── context.tsx         # Context API para estado global
 │   └── utils/              # Utilitários
 └── public/                 # Arquivos públicos
 ```
@@ -230,6 +278,7 @@ docker-compose logs redis
 - [Documentação da API do Chat](backend/CHAT_API_DOCS.md)
 - [Gerenciamento de Sessões](backend/SESSIONS_README.md)
 - [Configuração SASS](frontend/SASS_README.md)
+- [Interface do Chat](frontend/CHAT_INTERFACE_README.md)
 
 ## 🔒 Segurança
 
@@ -240,6 +289,19 @@ O projeto implementa várias camadas de segurança:
 - **Rate Limiting** - Prevenção de spam
 - **Validação de entrada** - Sanitização de dados
 - **Autenticação JWT** - Tokens seguros (se implementado)
+
+## 🎨 Design e UX
+
+### Tema Ultra Dark
+- **Paleta de cores escuras** para melhor experiência visual
+- **Contraste otimizado** para leitura confortável
+- **Componentes responsivos** para diferentes dispositivos
+
+### Interface do Chat
+- **Design minimalista** focado na experiência do usuário
+- **Animações suaves** para feedback visual
+- **Indicadores de estado** (digitando, carregando)
+- **Seletor de modelo integrado** sem poluir a interface
 
 ## 🚀 Deploy
 

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useChat } from '../hooks/useChat';
+import ModelSelector from './ModelSelector';
 
 const ChatInput: React.FC = () => {
   const { state, addMessage, setLoading } = useChat();
@@ -21,7 +22,7 @@ const ChatInput: React.FC = () => {
       // Simular delay da API
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const aiResponse = `Esta é uma resposta simulada para: "${userMessage}". Em uma implementação real, esta resposta viria do seu backend conectado à API do OpenRouter.`;
+      const aiResponse = `Esta é uma resposta simulada do modelo "${state.selectedModel.name}" para: "${userMessage}". Em uma implementação real, esta resposta viria do seu backend conectado à API do OpenRouter usando o modelo ${state.selectedModel.id}.`;
       
       addMessage(aiResponse, false);
     } catch {
@@ -84,6 +85,7 @@ const ChatInput: React.FC = () => {
       </div>
       
       <div className="chat-input__footer">
+        <ModelSelector />
         <span className="chat-input__hint">
           Pressione Enter para enviar, Shift + Enter para nova linha
         </span>
