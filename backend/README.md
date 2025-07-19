@@ -9,6 +9,8 @@ Backend desenvolvido em Node.js com TypeScript para o projeto de TCC, com integr
 - **Express** - Framework web minimalista
 - **Axios** - Cliente HTTP para requisições
 - **OpenRouter** - API para acesso a múltiplos modelos LLM
+- **Redis** - Banco de dados em memória para sessões e cache
+- **Docker** - Containerização para Redis e Redis Commander
 - **CORS** - Middleware para Cross-Origin Resource Sharing
 - **Helmet** - Middleware de segurança
 - **Morgan** - Logger HTTP
@@ -33,6 +35,18 @@ Backend desenvolvido em Node.js com TypeScript para o projeto de TCC, com integr
    - `OPENROUTER_API_KEY`: Sua chave API do OpenRouter (obtenha em https://openrouter.ai/keys)
    - `APP_NAME`: Nome da sua aplicação
    - `HTTP_REFERER`: URL do seu frontend
+   - `REDIS_PASSWORD`: Senha do Redis (padrão: `tcc_redis_2025`)
+
+4. **Configure o Redis com Docker:**
+   ```bash
+   # Iniciar containers Redis e Redis Commander
+   docker-compose up -d
+   
+   # Verificar se os containers estão rodando
+   docker-compose ps
+   
+   # Acessar Redis Commander em: http://localhost:8081
+   ```
 
 ## 🏃‍♂️ Como executar
 
@@ -67,10 +81,32 @@ src/
 ├── models/          # Modelos de dados (interfaces/types)
 ├── routes/          # Definição das rotas
 ├── middleware/      # Middlewares customizados
+├── config/          # Configurações (Redis, database, etc.)
 ├── tests/           # Testes unitários e de integração
 ├── app.ts           # Configuração do Express
 └── server.ts        # Inicialização do servidor
 ```
+
+## 🗃️ Sistema de Sessões com Redis
+
+Este projeto inclui um sistema completo de controle de sessões para gerenciar conversas com contexto usando Redis como armazenamento.
+
+### Funcionalidades
+- ✅ **Criação de sessões** com IDs únicos
+- ✅ **Controle por usuário** - múltiplas sessões por usuário
+- ✅ **Histórico de mensagens** persistente
+- ✅ **TTL automático** - sessões expiram em 7 dias
+- ✅ **Limitação de sessões** - máximo 10 sessões por usuário
+- ✅ **Redis Commander** - interface visual para monitoramento
+
+### Infraestrutura
+- **Redis 7-alpine** - Armazenamento principal
+- **Redis Commander** - Interface web (http://localhost:8081)
+- **Docker Compose** - Orquestração de containers
+- **Autenticação** - Redis protegido com senha
+
+### Documentação
+Consulte o arquivo [SESSIONS_README.md](./SESSIONS_README.md) para documentação completa do sistema de sessões.
 
 ## 🤖 Integração OpenRouter
 
@@ -111,6 +147,15 @@ Consulte o arquivo [OPENROUTER_DOCS.md](./OPENROUTER_DOCS.md) para documentaçã
 - `POST /api/chat/cost-estimate` - Calcula custo estimado
 - `GET /api/chat/health` - Verifica status da API OpenRouter
 
+### Sessões (Redis)
+- `GET /api/sessions/health` - Verifica status do Redis
+- `POST /api/sessions` - Cria nova sessão de chat
+- `GET /api/sessions/:id` - Busca sessão por ID
+- `POST /api/sessions/:id/messages` - Adiciona mensagem à sessão
+- `GET /api/sessions/:id/messages` - Lista mensagens da sessão
+- `GET /api/users/:userId/sessions` - Lista sessões do usuário
+- `DELETE /api/sessions/:id` - Remove sessão
+
 ## 📝 Exemplo de Uso
 
 ### Criar um usuário
@@ -141,6 +186,36 @@ curl -X POST http://localhost:3000/api/chat/message \
 curl http://localhost:3000/api/chat/models
 ```
 
+### Criar uma sessão de chat
+```bash
+curl -X POST http://localhost:3000/api/sessions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "user123",
+    "title": "Minha conversa sobre IA"
+  }'
+```
+
+### Adicionar mensagem à sessão
+```bash
+curl -X POST http://localhost:3000/api/sessions/SESSION_ID/messages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Explique machine learning",
+    "role": "user"
+  }'
+```
+
+### Listar sessões do usuário
+```bash
+curl http://localhost:3000/api/users/user123/sessions
+```
+
+### Buscar histórico de mensagens
+```bash
+curl http://localhost:3000/api/sessions/SESSION_ID/messages
+```
+
 ## 🛡️ Segurança
 
 O projeto inclui várias medidas de segurança:
@@ -164,6 +239,10 @@ O projeto inclui várias medidas de segurança:
 | `OPENROUTER_API_KEY` | Chave API do OpenRouter | - |
 | `APP_NAME` | Nome da aplicação | `TCC Backend` |
 | `HTTP_REFERER` | URL de referência | `http://localhost:3000` |
+| `REDIS_HOST` | Host do Redis | `localhost` |
+| `REDIS_PORT` | Porta do Redis | `6379` |
+| `REDIS_PASSWORD` | Senha do Redis | `tcc_redis_2025` |
+| `REDIS_DB` | Database do Redis | `0` |
 
 ## 🧪 Testes
 
@@ -179,15 +258,41 @@ Para executar com coverage:
 npm run test -- --coverage
 ```
 
+## 🐳 Docker e Redis
+
+### Comandos principais
+
+```bash
+# Iniciar Redis e Redis Commander
+docker-compose up -d
+
+# Parar containers
+docker-compose down
+
+# Ver logs do Redis
+docker-compose logs redis
+
+# Reiniciar containers
+docker-compose restart
+
+# Executar comando no Redis
+docker exec tcc-redis redis-cli -a "tcc_redis_2025" ping
+```
+
+### Acessos
+- **Redis**: `localhost:6379` (password: `tcc_redis_2025`)
+- **Redis Commander**: http://localhost:8081
+
 ## 📈 Próximos Passos
 
-- [ ] Integração com banco de dados (MongoDB/PostgreSQL)
+- [x] ~~Integração com banco de dados~~ **Redis implementado**
+- [x] ~~Docker e Docker Compose~~ **Implementado para Redis**
 - [ ] Autenticação JWT
 - [ ] Validação com Joi ou Yup
 - [ ] Rate limiting
 - [ ] Logs estruturados
 - [ ] Documentação com Swagger
-- [ ] Docker e Docker Compose
+- [ ] Integração chat + sessões
 - [ ] Pipeline CI/CD
 
 ## 🤝 Contribuição
