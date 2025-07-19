@@ -1,0 +1,122 @@
+// Additional enhancements and refinements
+
+// Enhanced hover effects
+.chat-sidebar__new-chat {
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.chat-input__send {
+  &:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.95);
+  }
+}
+
+// Enhanced message styling
+.chat-message {
+  &__text {
+    // Better text rendering
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    
+    // Code-like text styling
+    code {
+      background-color: var(--color-bg-tertiary);
+      padding: 0.125rem 0.25rem;
+      border-radius: var(--border-radius-sm);
+      font-family: var(--font-family-mono);
+      font-size: 0.875em;
+    }
+    
+    // Basic markdown-style formatting
+    strong, b {
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    
+    em, i {
+      font-style: italic;
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+// Loading state improvements
+.chat-input__send {
+  &:disabled {
+    .animate-spin {
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+// Focus improvements
+.chat-input__textarea {
+  &:focus {
+    outline: none; // Remove default outline since parent has border effect
+  }
+}
+
+// Scroll improvements
+.chat-messages {
+  scroll-behavior: smooth;
+  
+  // Hide scrollbar on mobile for cleaner look
+  @media (max-width: 768px) {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// Welcome screen improvements
+.chat-welcome {
+  &__icon {
+    opacity: 0.8;
+    transition: opacity var(--transition-normal);
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// Conversation list enhancements
+.chat-sidebar__conversation {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: var(--color-accent-primary);
+    border-radius: 0 2px 2px 0;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+  
+  &--active::before {
+    opacity: 1;
+  }
+}
+
+// Enhanced avatar styling
+.chat-message__avatar {
+  transition: transform var(--transition-fast);
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// Better input container styling
+.chat-input__container {
+  &:focus-within {
+    box-shadow: 0 0 0 2px var(--color-accent-primary);
+  }
+}

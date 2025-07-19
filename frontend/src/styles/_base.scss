@@ -16,8 +16,10 @@ body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);
   line-height: 1.6;
-  color: var(--color-gray-900);
-  background-color: var(--color-white);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -121,4 +123,37 @@ table {
 // App specific styles
 #root {
   min-height: 100vh;
+}
+
+// Scrollbar styling for dark theme
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-muted);
+  border-radius: var(--border-radius-md);
+  
+  &:hover {
+    background: var(--color-text-secondary);
+  }
+}
+
+// Selection styling
+::selection {
+  background-color: var(--color-accent-primary);
+  color: var(--color-text-inverse);
+}
+
+// Focus styles
+button:focus,
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
 }
