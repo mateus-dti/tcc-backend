@@ -1,42 +1,79 @@
-#root {
-  max-width: 1280px;
+/* App Styles */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding: var(--spacing-3) var(--spacing-4);
+  flex-shrink: 0;
+}
+
+.app-header__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-header h1 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.app-header__user {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.app-header__logout {
+  background: none;
+  border: 1px solid var(--color-border-primary);
+  color: var(--color-text-primary);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.app-header__logout:hover {
+  background-color: var(--color-bg-primary);
+  border-color: var(--color-accent-primary);
+}
+
+.app-main {
+  flex: 1;
+  overflow: hidden;
+}
+
+.auth-selector {
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-header__content {
+    padding: 0 var(--spacing-2);
   }
-  to {
-    transform: rotate(360deg);
+  
+  .app-header h1 {
+    font-size: var(--font-size-lg);
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  
+  .app-header__user {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-1);
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

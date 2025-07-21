@@ -1,0 +1,194 @@
+// Auth Form Styles
+.auth-form {
+  width: 100%;
+
+  &__container {
+    width: 100%;
+  }
+
+  &__title {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+    color: var(--color-text-primary);
+  }
+
+  &__error {
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger-text);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-4);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--color-border-primary);
+    text-align: center;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  &__label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  &__input {
+    padding: var(--spacing-3);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    background-color: var(--color-bg-input);
+    color: var(--color-text-primary);
+    transition: all var(--transition-fast);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent-primary);
+      box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    &--error {
+      border-color: var(--color-accent-danger);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      
+      &:focus {
+        border-color: var(--color-accent-danger);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+      }
+    }
+  }
+
+  &__field-error {
+    display: block;
+    color: var(--color-danger-text);
+    font-size: var(--font-size-xs);
+    margin-top: var(--spacing-1);
+    font-weight: 500;
+  }
+
+  &__submit {
+    background-color: var(--color-accent-primary);
+    color: var(--color-text-primary);
+    border: none;
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-2);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-accent-secondary);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    // Loading state
+    &--loading {
+      pointer-events: none;
+    }
+
+    svg {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &__switch {
+    text-align: center;
+    margin-top: var(--spacing-6);
+    padding-top: var(--spacing-4);
+    border-top: 1px solid var(--color-border-primary);
+
+    p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+  }
+
+  &__switch-btn {
+    background: none;
+    border: none;
+    color: var(--color-accent-primary);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    text-decoration: underline;
+    padding: 0;
+
+    &:hover:not(:disabled) {
+      color: var(--color-accent-secondary);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .auth-page {
+    padding: var(--spacing-2);
+
+    &__container {
+      padding: var(--spacing-6);
+      max-height: calc(100vh - var(--spacing-4));
+    }
+
+    &__brand {
+      font-size: var(--font-size-2xl);
+    }
+  }
+
+  .auth-form {
+    &__title {
+      font-size: var(--font-size-xl);
+    }
+  }
+}

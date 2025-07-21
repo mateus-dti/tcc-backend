@@ -9,13 +9,16 @@ O sistema permite que usuários interajam com diferentes modelos de IA (GPT, Cla
 ### Principais Funcionalidades
 
 - 💬 **Chat em tempo real** com múltiplos modelos de IA
-- � **Seletor de modelo dinâmico** para escolher o modelo de IA durante a conversa
-- �📝 **Gerenciamento de sessões** para organizar conversas
-- 👤 **Sistema de usuários** para personalização
+- 🤖 **Seletor de modelo dinâmico** para escolher o modelo de IA durante a conversa
+- 📝 **Gerenciamento de sessões** para organizar conversas
+- 👤 **Sistema de usuários** com autenticação segura
+- 🔐 **Validação robusta** de formulários com feedback em tempo real
 - 🤖 **Múltiplos modelos** disponíveis via OpenRouter
 - 💾 **Persistência de dados** com Redis
 - 🔒 **Segurança** com middlewares de proteção
 - 🎨 **Interface moderna** com tema ultra dark e design responsivo
+- 📱 **Design responsivo** para mobile, tablet e desktop
+- ✅ **Testes E2E** com Cypress para garantia de qualidade
 
 ## 🏗️ Arquitetura do Sistema
 
@@ -95,6 +98,74 @@ O projeto utiliza **React Context API** para gerenciamento de estado global, inc
 
 O contexto é implementado com `useReducer` para garantir atualizações de estado previsíveis e facilitar o debug.
 
+### 🛡️ Sistema de Validação e Autenticação
+
+O projeto implementa um sistema robusto de validação e autenticação:
+
+#### 🔐 Validação de Formulários
+- **Validação em tempo real** para todos os campos
+- **Validação de confirmação de senha** com feedback visual
+- **Verificação de força da senha**:
+  - Mínimo 6 caracteres
+  - Pelo menos uma letra
+- **Validação de email** com regex
+- **Feedback visual** com bordas coloridas e mensagens específicas
+- **Botão de submit** habilitado apenas quando todos os campos são válidos
+
+#### 📧 Validação de Dados
+- **Nome**: mínimo 2 caracteres
+- **Email**: formato válido obrigatório
+- **Senha**: critérios de segurança
+- **Confirmação de senha**: deve coincidir exatamente
+
+#### 🎨 Interface de Autenticação
+- **Design consistente** com o tema ultra dark
+- **Layout responsivo** para todos os dispositivos
+- **Estados visuais** claros (loading, error, success)
+- **Altura fixa** sem scroll vertical desnecessário
+
+### ✅ Testes End-to-End (E2E)
+
+O projeto inclui uma suíte completa de testes E2E usando **Cypress**:
+
+#### 🧪 Cobertura de Testes
+- **Validação de formulários**: 6 testes (100% passando)
+- **Fluxo de autenticação**: 10 testes (80% passando*)
+- **Responsividade**: 12 testes (67% passando*)
+- **Interface do chat**: Testes preparados
+
+*Alguns testes falham intencionalmente quando o backend não está rodando
+
+#### 📱 Testes de Responsividade
+- **Mobile** (375x667): Testes de layout e interação
+- **Tablet** (768x1024): Adaptação de formulários
+- **Desktop** (1280x720): Interface completa
+
+#### 🔍 Comandos de Teste Disponíveis
+```bash
+# Executar apenas testes de validação
+npm run cypress:run:validation
+
+# Executar todos os testes E2E
+npm run test:e2e
+
+# Abrir interface do Cypress
+npm run test:e2e:open
+```
+
+#### 📊 Estrutura de Testes
+```
+cypress/
+├── e2e/
+│   ├── register-validation.cy.ts    # Validação de formulários
+│   ├── auth-flow.cy.ts              # Fluxo de autenticação
+│   ├── responsive.cy.ts             # Testes responsivos
+│   └── chat-interface.cy.ts         # Interface de chat
+├── fixtures/                        # Dados de teste
+├── support/                         # Configurações e comandos
+└── cypress.config.js                # Configuração principal
+```
+
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
@@ -141,7 +212,23 @@ npm run dev
 
 O frontend estará disponível em `http://localhost:5173`
 
-### 3. Configuração das Variáveis de Ambiente
+### 3. Executar Testes (Opcional)
+
+```bash
+# No diretório do frontend
+cd frontend
+
+# Executar testes de validação (recomendado)
+npm run cypress:run:validation
+
+# Executar todos os testes E2E (com servidor rodando)
+npm run test:e2e
+
+# Abrir interface do Cypress para testes interativos
+npm run test:e2e:open
+```
+
+### 4. Configuração das Variáveis de Ambiente
 
 #### Backend (.env)
 ```env

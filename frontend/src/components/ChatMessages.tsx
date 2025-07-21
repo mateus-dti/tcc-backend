@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { useChat } from '../hooks/useChat';
+import type { Message } from '../types';
 import { ChatMessage } from './index';
 
-const ChatMessages: React.FC = () => {
-  const { state } = useChat();
+interface ChatMessagesProps {
+  messages: Message[];
+}
+
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -12,9 +15,9 @@ const ChatMessages: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [state.messages]);
+  }, [messages]);
 
-  if (state.messages.length === 0) {
+  if (messages.length === 0) {
     return (
       <div className="chat-messages chat-messages--empty">
         <div className="chat-welcome">
@@ -34,26 +37,9 @@ const ChatMessages: React.FC = () => {
 
   return (
     <div className="chat-messages">
-      {state.messages.map((message) => (
+      {messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
       ))}
-      {state.isLoading && (
-        <div className="chat-message chat-message--ai">
-          <div className="chat-message__avatar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"/>
-              <path d="M12 1v6m0 6v6"/>
-            </svg>
-          </div>
-          <div className="chat-message__content">
-            <div className="typing-indicator">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-        </div>
-      )}
       <div ref={messagesEndRef} />
     </div>
   );

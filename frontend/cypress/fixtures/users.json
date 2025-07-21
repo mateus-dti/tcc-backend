@@ -1,0 +1,19 @@
+{
+  "users": {
+    "validUser": {
+      "name": "João Silva",
+      "email": "joao@example.com",
+      "password": "senha123"
+    },
+    "testUser": {
+      "name": "Maria Santos",
+      "email": "maria@test.com",
+      "password": "password123"
+    }
+  },
+  "messages": {
+    "welcome": "Bem-vindo ao TCC Chat",
+    "loginSuccess": "Login realizado com sucesso",
+    "registrationSuccess": "Conta criada com sucesso"
+  }
+}

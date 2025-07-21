@@ -1,11 +1,13 @@
 import React from 'react';
-import { ChatSidebar, ChatWindow } from './index';
 
-const ChatLayout: React.FC = () => {
+interface ChatLayoutProps {
+  children: React.ReactNode;
+}
+
+const ChatLayout: React.FC<ChatLayoutProps> = ({ children }) => {
   return (
     <div className="chat-layout">
-      <ChatSidebar />
-      <ChatWindow />
+      {children}
     </div>
   );
 };

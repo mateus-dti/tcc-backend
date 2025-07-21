@@ -6,3 +6,6 @@ export { default as ChatMessages } from './ChatMessages';
 export { default as ChatMessage } from './ChatMessage';
 export { default as ChatInput } from './ChatInput';
 export { default as ModelSelector } from './ModelSelector';
+export { default as LoginForm } from './LoginForm';
+export { default as RegisterForm } from './RegisterForm';
+export { default as ProtectedRoute } from './ProtectedRoute';

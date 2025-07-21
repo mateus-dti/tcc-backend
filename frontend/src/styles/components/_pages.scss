@@ -1,0 +1,122 @@
+// Auth Pages Styles
+.auth-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-primary);
+  padding: var(--spacing-4);
+  overflow: hidden;
+
+  &__container {
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--border-radius-xl);
+    padding: var(--spacing-8);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--color-border-primary);
+    width: 100%;
+    max-width: 420px;
+    max-height: calc(100vh - var(--spacing-8));
+    overflow-y: auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: var(--spacing-6);
+  }
+
+  &__brand {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2);
+    background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  &__subtitle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    margin: 0;
+  }
+
+  &__footer {
+    text-align: center;
+    margin-top: var(--spacing-6);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-border-primary);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &__link {
+    color: var(--color-accent-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+    
+    &:hover {
+      color: var(--color-text-primary);
+      text-decoration: underline;
+    }
+  }
+}
+
+// Enhanced ChatSidebar styles
+.chat-sidebar {
+  &__user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__logout {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    
+    &:hover {
+      color: #ff4757;
+    }
+  }
+
+  &__conversation {
+    position: relative;
+    
+    &:hover .chat-sidebar__conversation-delete {
+      opacity: 1;
+    }
+  }
+
+  &__conversation-delete {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    padding: 0.25rem;
+    
+    &:hover {
+      color: #ff4757;
+    }
+  }
+
+  &__loading,
+  &__empty {
+    padding: 1rem;
+    text-align: center;
+    color: #888;
+    font-size: 0.9rem;
+  }
+}

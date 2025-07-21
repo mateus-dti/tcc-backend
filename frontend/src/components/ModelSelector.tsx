@@ -1,32 +1,33 @@
 import React from 'react';
-import { useChat } from '../hooks/useChat';
+import { useChatActions } from '../hooks/useChat';
 
 const ModelSelector: React.FC = () => {
-  const { state, setSelectedModel } = useChat();
-
-  const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = event.target.value;
-    const selectedModel = state.availableModels.find(model => model.id === selectedId);
-    if (selectedModel) {
-      setSelectedModel(selectedModel);
-    }
-  };
+  const { 
+    selectedModel, 
+    availableModels, 
+    isLoading, 
+    handleModelChange 
+  } = useChatActions();
 
   return (
     <div className="model-selector">
       <select
         id="model-select"
-        value={state.selectedModel.id}
-        onChange={handleModelChange}
+        value={selectedModel.id}
+        onChange={(e) => handleModelChange(e.target.value)}
         className="model-selector__select"
-        disabled={state.isLoading}
+        disabled={isLoading}
         title="Selecionar modelo de IA"
       >
-        {state.availableModels.map((model) => (
-          <option key={model.id} value={model.id}>
-            {model.name}
-          </option>
-        ))}
+        {availableModels.length > 0 ? (
+          availableModels.map((model) => (
+            <option key={model.id} value={model.id}>
+              {model.name}
+            </option>
+          ))
+        ) : (
+          <option value="">Carregando modelos...</option>
+        )}
       </select>
       <svg 
         className="model-selector__icon" 

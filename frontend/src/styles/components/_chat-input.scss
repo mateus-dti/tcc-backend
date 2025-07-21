@@ -1,5 +1,15 @@
 // Chat Input Styles
 .chat-input {
+  &__error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    border: 1px solid #fecaca;
+  }
+
   &__container {
     position: relative;
     background-color: var(--color-bg-input);

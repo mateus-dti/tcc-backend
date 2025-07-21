@@ -18,6 +18,43 @@ export interface LoginResponse {
   user: User;
 }
 
+// Tipos relacionados ao Chat e API
+export interface ChatMessage {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
+export interface Model {
+  id: string;
+  name: string;
+}
+
+export interface APIResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export interface ChatAPIResponse extends APIResponse {
+  data: {
+    response: string;
+    modelId: string;
+    message: string;
+    usage?: {
+      prompt_tokens?: number;
+      completion_tokens?: number;
+      total_tokens?: number;
+    };
+  };
+}
+
+export interface ModelsAPIResponse extends APIResponse {
+  data: Model[];
+  count: number;
+}
+
 export interface RegisterRequest {
   name: string;
   email: string;
@@ -41,6 +78,9 @@ export interface ChatSession {
   updatedAt: string;
   messages: Message[];
 }
+
+// Alias para compatibilidade
+export type Session = ChatSession;
 
 export interface SendMessageRequest {
   content: string;

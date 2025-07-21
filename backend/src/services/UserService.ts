@@ -1,4 +1,5 @@
-import { User, CreateUserData, UpdateUserData } from '../models/User';
+import { User, CreateUserData, UpdateUserData, sanitizeUser } from '../models/User';
+import bcrypt from 'bcryptjs';
 
 export class UserService {
   private users: User[] = [];
@@ -11,6 +12,7 @@ export class UserService {
         id: '1',
         name: 'João Silva',
         email: 'joao@email.com',
+        password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj7.k8Y7tZO2', // senha: 123456
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -18,6 +20,7 @@ export class UserService {
         id: '2',
         name: 'Maria Santos',
         email: 'maria@email.com',
+        password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj7.k8Y7tZO2', // senha: 123456
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -26,11 +29,17 @@ export class UserService {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return this.users;
+    // Retornar usuários sem senhas
+    return this.users.map(user => sanitizeUser(user));
   }
 
   async getUserById(id: string): Promise<User | null> {
     const user = this.users.find(user => user.id === id);
+    return user || null;
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    const user = this.users.find(user => user.email === email);
     return user || null;
   }
 
@@ -45,6 +54,7 @@ export class UserService {
       id: this.nextId.toString(),
       name: userData.name,
       email: userData.email,
+      password: userData.password, // Já deve vir hasheada do AuthService
       createdAt: new Date(),
       updatedAt: new Date(),
     };

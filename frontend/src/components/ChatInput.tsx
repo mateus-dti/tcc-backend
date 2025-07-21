@@ -1,34 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useChat } from '../hooks/useChat';
+import React, { useRef, useEffect, useState } from 'react';
 import ModelSelector from './ModelSelector';
 
-const ChatInput: React.FC = () => {
-  const { state, addMessage, setLoading } = useChat();
-  const [inputValue, setInputValue] = useState('');
+interface ChatInputProps {
+  onSendMessage: (message: string) => Promise<void>;
+  isLoading: boolean;
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
+  const [currentInput, setCurrentInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!inputValue.trim() || state.isLoading) return;
-
-    const userMessage = inputValue.trim();
-    setInputValue('');
-    addMessage(userMessage, true);
-    setLoading(true);
-
-    // Simular resposta da AI (aqui você conectaria com o backend)
-    try {
-      // Simular delay da API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const aiResponse = `Esta é uma resposta simulada do modelo "${state.selectedModel.name}" para: "${userMessage}". Em uma implementação real, esta resposta viria do seu backend conectado à API do OpenRouter usando o modelo ${state.selectedModel.id}.`;
-      
-      addMessage(aiResponse, false);
-    } catch {
-      addMessage('Desculpe, ocorreu um erro ao processar sua mensagem.', false);
-    } finally {
-      setLoading(false);
+    if (currentInput.trim() && !isLoading) {
+      const message = currentInput;
+      setCurrentInput('');
+      await onSendMessage(message);
     }
   };
 
@@ -37,6 +24,10 @@ const ChatInput: React.FC = () => {
       e.preventDefault();
       handleSubmit(e as React.FormEvent);
     }
+  };
+
+  const handleInputChange = (value: string) => {
+    setCurrentInput(value);
   };
 
   const adjustTextareaHeight = () => {
@@ -50,28 +41,28 @@ const ChatInput: React.FC = () => {
 
   useEffect(() => {
     adjustTextareaHeight();
-  }, [inputValue]);
+  }, [currentInput]);
 
   return (
     <form onSubmit={handleSubmit} className="chat-input">
       <div className="chat-input__container">
         <textarea
           ref={textareaRef}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          value={currentInput}
+          onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Digite sua mensagem..."
           className="chat-input__textarea"
           rows={1}
-          disabled={state.isLoading}
+          disabled={isLoading}
         />
         
         <button
           type="submit"
-          disabled={!inputValue.trim() || state.isLoading}
+          disabled={!currentInput.trim() || isLoading}
           className="chat-input__send"
         >
-          {state.isLoading ? (
+          {isLoading ? (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-spin">
               <path d="M21 12a9 9 0 11-6.219-8.56"/>
             </svg>

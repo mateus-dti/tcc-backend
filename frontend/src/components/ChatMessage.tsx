@@ -1,22 +1,24 @@
 import React from 'react';
-import type { Message } from '../context';
+import type { Message } from '../types';
 
 interface ChatMessageProps {
   message: Message;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
-  const formatTime = (timestamp: Date) => {
+  const formatTime = (timestamp: string) => {
     return new Intl.DateTimeFormat('pt-BR', {
       hour: '2-digit',
       minute: '2-digit',
-    }).format(timestamp);
+    }).format(new Date(timestamp));
   };
 
+  const isUser = message.role === 'user';
+
   return (
-    <div className={`chat-message ${message.isUser ? 'chat-message--user' : 'chat-message--ai'}`}>
+    <div className={`chat-message ${isUser ? 'chat-message--user' : 'chat-message--ai'}`}>
       <div className="chat-message__avatar">
-        {message.isUser ? (
+        {isUser ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
@@ -32,7 +34,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       <div className="chat-message__content">
         <div className="chat-message__header">
           <span className="chat-message__author">
-            {message.isUser ? 'Você' : 'Assistente'}
+            {isUser ? 'Você' : 'Assistente'}
           </span>
           <span className="chat-message__time">
             {formatTime(message.timestamp)}
@@ -40,7 +42,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         </div>
         
         <div className="chat-message__text">
-          {message.text}
+          {message.content}
         </div>
       </div>
     </div>
