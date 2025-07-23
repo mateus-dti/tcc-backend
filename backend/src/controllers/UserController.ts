@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/UserService';
+import { SessionService } from '../services/SessionService';
 
 export class UserController {
   private userService: UserService;
+  private sessionService: SessionService;
 
   constructor() {
     this.userService = new UserService();
+    this.sessionService = new SessionService();
   }
 
   getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -97,6 +100,20 @@ export class UserController {
       res.status(200).json({
         success: true,
         message: 'Usuário deletado com sucesso',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getUserSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { userId } = req.params;
+      const sessions = await this.sessionService.getUserSessions(userId);
+      
+      res.status(200).json({
+        success: true,
+        data: sessions,
       });
     } catch (error) {
       next(error);

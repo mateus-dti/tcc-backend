@@ -10,6 +10,8 @@ import { RedisConfig } from './config/redis';
 
 dotenv.config();
 
+console.log('🔧 Dotenv loaded - JWT_SECRET:', process.env.JWT_SECRET);
+
 const app = express();
 
 // Initialize Redis connection
@@ -53,6 +55,40 @@ app.get('/health', (req, res) => {
     message: 'Server is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
+  });
+});
+
+// Endpoint de debug para testar tokens
+app.get('/debug/token', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  res.json({
+    hasAuthHeader: !!authHeader,
+    authHeaderPreview: authHeader ? authHeader.substring(0, 20) + '...' : null,
+    hasToken: !!token,
+    tokenPreview: token ? token.substring(0, 20) + '...' : null,
+    jwtSecret: process.env.JWT_SECRET?.substring(0, 10) + '...'
+  });
+});
+
+// Debug endpoint para gerar novo token
+app.post('/debug/new-token', (req, res) => {
+  const jwt = require('jsonwebtoken');
+  const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+  
+  const payload = {
+    id: '3',
+    email: 'mateus@email.com',
+    name: 'Mateus Silveira Ribeiro'
+  };
+  
+  const newToken = jwt.sign(payload, jwtSecret, { expiresIn: '7d' });
+  
+  res.json({
+    success: true,
+    token: newToken,
+    message: 'Novo token gerado para debug'
   });
 });
 

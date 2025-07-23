@@ -11,6 +11,45 @@ export class ChatController {
    */
   static async getModels(req: Request, res: Response): Promise<void> {
     try {
+      console.log('🤖 Getting models from OpenRouter...');
+      console.log('🔑 OpenRouter API Key:', process.env.OPENROUTER_API_KEY?.substring(0, 10) + '...');
+      
+      // Se a API key não estiver configurada, retorna modelos mock
+      if (!process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY === 'your_openrouter_api_key_here') {
+        console.log('📝 Using mock models (OpenRouter API key not configured)');
+        const mockModels = [
+          {
+            id: 'openai/gpt-3.5-turbo',
+            name: 'GPT-3.5 Turbo',
+            description: 'Fast and efficient model for most tasks',
+            context_length: 4096,
+            pricing: { prompt: '0.001', completion: '0.002' }
+          },
+          {
+            id: 'openai/gpt-4',
+            name: 'GPT-4',
+            description: 'Most capable model for complex tasks',
+            context_length: 8192,
+            pricing: { prompt: '0.03', completion: '0.06' }
+          },
+          {
+            id: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
+            name: 'Dolphin Mistral 24B (Free)',
+            description: 'Free model for testing',
+            context_length: 4096,
+            pricing: { prompt: '0', completion: '0' }
+          }
+        ];
+        
+        res.json({
+          success: true,
+          data: mockModels,
+          count: mockModels.length,
+          note: 'Using mock models - configure OPENROUTER_API_KEY for real models'
+        });
+        return;
+      }
+      
       const openRouter = getOpenRouterService();
       const models = await openRouter.getModels();
       
@@ -20,6 +59,8 @@ export class ChatController {
         count: models.length
       });
     } catch (error: any) {
+      console.error('❌ Error getting models:', error.message);
+      console.error('Full error:', error);
       res.status(500).json({
         success: false,
         error: error.message || 'Failed to fetch models'
@@ -341,9 +382,15 @@ export class ChatController {
    */
   static async sendSessionMessage(req: Request, res: Response): Promise<void> {
     try {
+      console.log('🎯 sendSessionMessage called with:', {
+        body: req.body,
+        user: req.user
+      });
+
       const { sessionId, message, modelId } = req.body;
 
       if (!sessionId || !message) {
+        console.log('❌ Missing required fields:', { sessionId: !!sessionId, message: !!message });
         res.status(400).json({
           success: false,
           error: 'sessionId and message are required'
@@ -351,9 +398,12 @@ export class ChatController {
         return;
       }
 
+      console.log('🔍 Looking for session:', sessionId);
       // Verificar se a sessão existe
       const session = await ChatController.sessionService.getSession(sessionId);
+      
       if (!session) {
+        console.log('❌ Session not found:', sessionId);
         res.status(404).json({
           success: false,
           error: 'Session not found'
@@ -361,16 +411,21 @@ export class ChatController {
         return;
       }
 
+      console.log('✅ Session found:', session);
+
       // Usar o modelo da sessão se não fornecido
       const useModel = modelId || session.model || 'openai/gpt-3.5-turbo';
+      console.log('🤖 Using model:', useModel);
 
       // Adicionar mensagem do usuário à sessão
+      console.log('💬 Adding user message to session...');
       await ChatController.sessionService.addMessage(sessionId, {
         role: 'user',
         content: message,
         model: useModel
       });
 
+      console.log('📚 Getting session messages...');
       // Buscar histórico de mensagens para contexto
       const messages = await ChatController.sessionService.getSessionMessages(sessionId, 20);
       
@@ -380,7 +435,46 @@ export class ChatController {
         content: msg.content
       }));
 
-      // Enviar para OpenRouter
+      console.log('🚀 Sending to OpenRouter with', openRouterMessages.length, 'messages');
+      
+      // Se a API key não estiver configurada, simula uma resposta
+      if (!process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY === 'your_openrouter_api_key_here') {
+        console.log('🤖 Using mock response (OpenRouter API key not configured)');
+        const mockResponse = {
+          response: `Olá! Sou um assistente simulado. Recebi sua mensagem: "${message}". Para usar um modelo real, configure a OPENROUTER_API_KEY no arquivo .env do backend.`,
+          usage: {
+            prompt_tokens: message.length,
+            completion_tokens: 50,
+            total_tokens: message.length + 50
+          }
+        };
+        
+        // Adicionar resposta do assistente à sessão
+        const assistantMessage = await ChatController.sessionService.addMessage(sessionId, {
+          role: 'assistant',
+          content: mockResponse.response,
+          model: useModel,
+          tokens: {
+            prompt: mockResponse.usage.prompt_tokens,
+            completion: mockResponse.usage.completion_tokens,
+            total: mockResponse.usage.total_tokens
+          }
+        });
+
+        res.json({
+          success: true,
+          data: {
+            sessionId,
+            message: assistantMessage,
+            usage: mockResponse.usage,
+            model: useModel,
+            note: 'Mock response - configure OPENROUTER_API_KEY for real AI responses'
+          }
+        });
+        return;
+      }
+      
+      // Enviar para OpenRouter (código real)
       const openRouter = getOpenRouterService();
       const result = await openRouter.conversationChat(
         useModel,
@@ -429,12 +523,15 @@ export class ChatController {
    */
   static async startChatSession(req: Request, res: Response): Promise<void> {
     try {
-      const { userId, title, modelId, initialMessage } = req.body;
+      const { title, modelId, initialMessage } = req.body;
+      
+      // Pegar userId do token de autenticação
+      const userId = (req as any).user?.id;
 
       if (!userId) {
         res.status(400).json({
           success: false,
-          error: 'userId is required'
+          error: 'User ID is required (from authentication token)'
         });
         return;
       }

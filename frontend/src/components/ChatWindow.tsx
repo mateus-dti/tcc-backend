@@ -30,7 +30,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
       
       <div className="chat-window__content">
-        <ChatMessages messages={messages} />
+        <ChatMessages messages={messages} isLoading={isLoading} />
       </div>
       
       <div className="chat-window__input">

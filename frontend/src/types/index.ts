@@ -1,67 +1,33 @@
-// Tipos relacionados ao usuário
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Re-exportar todos os tipos dos módulos específicos
+export type { ApiResponse, PaginationInfo, ChatUsage } from './api';
+export type { 
+  Model, 
+  ChatMessage, 
+  ChatMessageResponse, 
+  ChatResponse, 
+  ModelsResponse, 
+  ConversationResponse,
+  SessionChatResponse,
+  SessionHistoryResponse,
+  StartSessionResponse
+} from './chat';
+export type { 
+  User, 
+  LoginRequest, 
+  RegisterRequest, 
+  AuthResponse, 
+  AuthData, 
+  UserResponse 
+} from './auth';
+export type { 
+  Session, 
+  CreateSessionRequest, 
+  UpdateSessionRequest, 
+  SessionResponse, 
+  SessionsResponse 
+} from './session';
 
-// Tipos relacionados à autenticação
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  user: User;
-}
-
-// Tipos relacionados ao Chat e API
-export interface ChatMessage {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: Date;
-}
-
-export interface Model {
-  id: string;
-  name: string;
-}
-
-export interface APIResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-export interface ChatAPIResponse extends APIResponse {
-  data: {
-    response: string;
-    modelId: string;
-    message: string;
-    usage?: {
-      prompt_tokens?: number;
-      completion_tokens?: number;
-      total_tokens?: number;
-    };
-  };
-}
-
-export interface ModelsAPIResponse extends APIResponse {
-  data: Model[];
-  count: number;
-}
-
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-// Tipos relacionados ao chat
+// Tipos relacionados ao chat (mantidos para compatibilidade)
 export interface Message {
   id: string;
   content: string;
@@ -77,45 +43,6 @@ export interface ChatSession {
   createdAt: string;
   updatedAt: string;
   messages: Message[];
-}
-
-// Alias para compatibilidade
-export type Session = ChatSession;
-
-export interface SendMessageRequest {
-  content: string;
-  sessionId?: string;
-}
-
-export interface SendMessageResponse {
-  message: Message;
-  sessionId: string;
-}
-
-// Tipos relacionados aos modelos
-export interface Model {
-  id: string;
-  name: string;
-  description?: string;
-  provider: string;
-  maxTokens?: number;
-  pricing?: {
-    input: number;
-    output: number;
-  };
-}
-
-// Tipos de resposta da API
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
-
-export interface ApiError {
-  success: false;
-  message: string;
-  error?: string;
 }
 
 // Tipos de componentes

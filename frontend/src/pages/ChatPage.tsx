@@ -1,19 +1,33 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useChat } from '../hooks/useChat';
 import { ChatLayout, ChatWindow, ChatSidebar } from '../components';
+import { ChatProvider } from '../context';
 import type { Session, Message } from '../types';
-import { sessionService } from '../services/api';
+import { sessionService, chatService } from '../services/api';
 
 const ChatPage: React.FC = () => {
+  return (
+    <ChatProvider>
+      <ChatPageContent />
+    </ChatProvider>
+  );
+};
+
+const ChatPageContent: React.FC = () => {
   const navigate = useNavigate();
   const { sessionId } = useParams<{ sessionId: string }>();
   const { state: authState } = useAuth();
+  const { state: chatState } = useChat();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
   const [currentSession, setCurrentSession] = useState<Session | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Obter modelo selecionado do contexto de chat
+  const selectedModel = chatState.selectedModel;
 
   // Redirecionar se não estiver autenticado
   useEffect(() => {
@@ -47,13 +61,27 @@ const ChatPage: React.FC = () => {
     if (!authState.user) return;
 
     try {
-      const newSession = await sessionService.createSession(authState.user.id);
+      // Usar o chatService para iniciar uma nova sessão
+      const result = await chatService.startChatSession(
+        'Nova Conversa',
+        selectedModel.id
+      );
+      
+      const newSession = result.session;
       setSessions(prev => [newSession, ...prev]);
       navigate(`/chat/${newSession.id}`, { replace: true });
     } catch (error) {
       console.error('Erro ao criar nova sessão:', error);
+      // Fallback para o método anterior se falhar
+      try {
+        const newSession = await sessionService.createSession(authState.user.id);
+        setSessions(prev => [newSession, ...prev]);
+        navigate(`/chat/${newSession.id}`, { replace: true });
+      } catch (fallbackError) {
+        console.error('Erro no fallback ao criar nova sessão:', fallbackError);
+      }
     }
-  }, [authState.user, navigate]);
+  }, [authState.user, navigate, selectedModel.id]);
 
   // Gerenciar sessão ativa baseada na URL
   useEffect(() => {
@@ -61,7 +89,8 @@ const ChatPage: React.FC = () => {
       const session = sessions.find(s => s.id === sessionId);
       if (session) {
         setCurrentSession(session);
-        setMessages(session.messages || []);
+        // Carregar histórico da sessão
+        loadSessionHistory(sessionId);
       } else {
         // Sessão não encontrada, redirecionar para uma nova sessão
         handleCreateNewSession();
@@ -75,6 +104,22 @@ const ChatPage: React.FC = () => {
       handleCreateNewSession();
     }
   }, [sessionId, sessions, isLoadingSessions, handleCreateNewSession, navigate]);
+
+  // Função para carregar histórico da sessão
+  const loadSessionHistory = async (sessionId: string) => {
+    try {
+      const history = await chatService.getSessionHistory(sessionId, 50);
+      setMessages(history.messages.map(msg => ({
+        id: msg.id,
+        content: msg.content,
+        role: msg.role,
+        timestamp: msg.timestamp,
+        sessionId: msg.sessionId,
+      })));
+    } catch (error) {
+      console.error('Erro ao carregar histórico da sessão:', error);
+    }
+  };
 
   const handleSelectSession = (session: Session) => {
     navigate(`/chat/${session.id}`);
@@ -116,23 +161,57 @@ const ChatPage: React.FC = () => {
       
       setMessages(prev => [...prev, userMessage]);
       
-      // Aqui você integraria com a API de chat
-      // Por enquanto, vou simular uma resposta
-      setTimeout(() => {
-        const assistantMessage: Message = {
-          id: `assistant-${Date.now()}`,
-          content: 'Esta é uma resposta simulada. A integração com a API real será implementada em seguida.',
-          role: 'assistant',
+      // Enviar mensagem para o backend usando a rota de sessão
+      const result = await chatService.sendSessionMessage(
+        sessionId,
+        message,
+        selectedModel.id // Usar o modelo selecionado
+      );
+      
+      // Remover mensagem temporária e adicionar mensagens reais
+      setMessages(prev => {
+        const filteredMessages = prev.filter(msg => msg.id !== userMessage.id);
+        
+        // Adicionar mensagem do usuário real
+        const realUserMessage: Message = {
+          id: `user-${Date.now()}`,
+          content: message,
+          role: 'user',
           timestamp: new Date().toISOString(),
           sessionId: sessionId,
         };
         
-        setMessages(prev => [...prev, assistantMessage]);
-        setIsLoading(false);
-      }, 1000);
+        // Adicionar resposta do assistente
+        const assistantMessage: Message = {
+          id: result.message.id,
+          content: result.message.content,
+          role: 'assistant',
+          timestamp: result.message.timestamp,
+          sessionId: sessionId,
+        };
+        
+        return [...filteredMessages, realUserMessage, assistantMessage];
+      });
       
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
+      
+      // Remover mensagem temporária em caso de erro
+      setMessages(prev => {
+        const remainingMessages = prev.filter(msg => !msg.id.startsWith('temp-'));
+        
+        // Adicionar mensagem de erro
+        const errorMessage: Message = {
+          id: `error-${Date.now()}`,
+          content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.',
+          role: 'assistant',
+          timestamp: new Date().toISOString(),
+          sessionId: sessionId!,
+        };
+        
+        return [...remainingMessages, errorMessage];
+      });
+    } finally {
       setIsLoading(false);
     }
   };

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { UserService } from './UserService';
 import { LoginData, AuthResponse, CreateUserData, sanitizeUser } from '../models/User';
 
@@ -10,18 +10,28 @@ export class AuthService {
 
   constructor() {
     this.userService = new UserService();
+    // Força a leitura do .env
     this.jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
     this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '24h';
+    
+    console.log('🔧 AuthService constructor - JWT_SECRET from env:', process.env.JWT_SECRET);
+    console.log('🔧 AuthService constructor - jwtSecret usado:', this.jwtSecret);
   }
 
   private generateToken(userId: string, email: string, name: string): string {
+    // Sempre pega o secret mais atual do process.env
+    const currentSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+    
     const payload = { 
       id: userId, 
       email, 
       name 
     };
     
-    return jwt.sign(payload, this.jwtSecret, { expiresIn: '24h' });
+    console.log('🔑 Generating token with secret:', currentSecret.substring(0, 10) + '...');
+    console.log('🔑 Full JWT_SECRET from env:', process.env.JWT_SECRET);
+    console.log('🔑 AuthService using secret:', currentSecret);
+    return jwt.sign(payload, currentSecret, { expiresIn: '7d' });
   }
 
   private async hashPassword(password: string): Promise<string> {

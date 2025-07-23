@@ -62,9 +62,11 @@ export class OpenRouterService {
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.OPENROUTER_API_KEY || '';
     
-    if (!this.apiKey) {
+    if (!this.apiKey || this.apiKey === 'your_openrouter_api_key_here') {
       throw new Error('OpenRouter API key is required. Set OPENROUTER_API_KEY environment variable or pass it to the constructor.');
     }
+
+    console.log('🔑 OpenRouter initialized with API key:', this.apiKey.substring(0, 10) + '...');
 
     this.client = axios.create({
       baseURL: this.baseURL,

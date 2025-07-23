@@ -26,7 +26,15 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
+  console.log('🔐 Auth middleware:', {
+    authHeader: authHeader ? `${authHeader.substring(0, 20)}...` : 'Not provided',
+    token: token ? `${token.substring(0, 20)}...` : 'Not provided',
+    path: req.path,
+    method: req.method
+  });
+
   if (!token) {
+    console.log('❌ No token provided');
     res.status(401).json({
       success: false,
       error: 'Token de acesso requerido'
@@ -35,6 +43,10 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   }
 
   const jwtSecret = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+  
+  console.log('🔍 Verificando token com secret:', jwtSecret.substring(0, 10) + '...');
+  console.log('🔍 Full JWT_SECRET from env:', process.env.JWT_SECRET);
+  console.log('🔍 Auth middleware jwtSecret:', jwtSecret);
 
   try {
     const decoded = jwt.verify(token, jwtSecret) as {
@@ -43,9 +55,11 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
       name: string;
     };
 
+    console.log('✅ Token válido para usuário:', decoded.email);
     req.user = decoded;
     next();
   } catch (err) {
+    console.log('❌ Token inválido:', err instanceof Error ? err.message : 'Unknown error');
     res.status(403).json({
       success: false,
       error: 'Token inválido ou expirado'

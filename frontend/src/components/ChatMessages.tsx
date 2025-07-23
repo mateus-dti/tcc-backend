@@ -4,18 +4,56 @@ import { ChatMessage } from './index';
 
 interface ChatMessagesProps {
   messages: Message[];
+  isLoading?: boolean;
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
+// Componente de loading
+const TypingIndicator: React.FC = () => {
+  return (
+    <div className="chat-message chat-message--ai">
+      <div className="chat-message__avatar">
+        <div className="chat-message__avatar-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 8V4l8 8-8 8V16H4v-8z"/>
+          </svg>
+        </div>
+      </div>
+      <div className="chat-message__content">
+        <div className="typing-indicator">
+          <div className="typing-indicator__dot"></div>
+          <div className="typing-indicator__dot"></div>
+          <div className="typing-indicator__dot"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, isLoading = false }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToTop = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = 0;
+    }
+  };
+
+  // Scroll para baixo quando há novas mensagens
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Scroll para cima quando está carregando (nova mensagem enviada)
+  useEffect(() => {
+    if (isLoading && messages.length > 0) {
+      setTimeout(() => scrollToTop(), 100);
+    }
+  }, [isLoading, messages.length]);
 
   if (messages.length === 0) {
     return (
@@ -36,10 +74,11 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
   }
 
   return (
-    <div className="chat-messages">
+    <div className="chat-messages" ref={messagesContainerRef}>
       {messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
       ))}
+      {isLoading && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );
